@@ -50,14 +50,54 @@ public class Application {
         }
     }
 
+    public static void teacherInterface(String teacherName) throws SQLException, ClassNotFoundException {
+        database.setConnection();
+        int number = 0;
+        while (number != 2) {
+            System.out.println("===================================");
+            System.out.println("Menu:");
+            System.out.println("1. Grade student");
+            System.out.println("2. Get info");
+            System.out.println("3. Exit");
+            number = scanner.nextInt();
+            switch (number) {
+                case 1:
+                    database.gradeStudent(teacherName);
+                    break;
+                case 2:
+                    System.out.println(database.getTeacherInfo(teacherName));
+                    break;
+                case 3:
+                    break;
+                default:
+                    System.out.println("Enter correct number!");
+                    break;
+            }
+        }
+    }
+
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        database.setConnection();
         System.out.println("Choose your type: admin(a)/teacher(t)/student(s)");
         char c = scanner.next().charAt(0);
         switch (c){
             case 'a':
                 adminInterface();
+                break;
             case 't':
-//                teacherInterface();
+                boolean isLogged = false;
+                String teacherName = "";
+                while (!isLogged) {
+                    System.out.println("Name:");
+                    teacherName = scanner.next();
+                    System.out.println("Password:");
+                    String password = scanner.next();
+                    if (database.teacherLogin(teacherName,password)) {
+                        isLogged = true;
+                    }
+                }
+                teacherInterface(teacherName);
+                break;
             case 's':
 //                studentInterface();
         }

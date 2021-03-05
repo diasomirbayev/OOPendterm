@@ -2,6 +2,7 @@ import classes.Student;
 import classes.Subject;
 import classes.Teacher;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -139,5 +140,63 @@ public class Database {
         }
     }
 
+    public boolean teacherLogin(String teacherName, String password) throws SQLException {
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from teacher where name='"+teacherName+"' and password='"+password+"'");
+        if (resultSet.next()) {
+            return true;
+        }
+        return false;
+    }
 
+    public void gradeStudent(String teacherName) throws SQLException {
+        System.out.println("Student name:");
+        String studentName = scanner.next();
+        System.out.println("Subject name:");
+        String subjectName = scanner.next();
+        int studentId = getStudentId(studentName);
+        int teacherId = getTeacherId(teacherName);
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from student_subject_connection where student_id="+studentId+" and subject_name='"+subjectName+"'");
+        Statement statement1 = connection.createStatement();
+        ResultSet resultSet1 = statement1.executeQuery("select * from teacher_student_connection where student_id="+studentId+" and teacher_id="+teacherId);
+        Statement statement2 = connection.createStatement();
+        ResultSet resultSet2 = statement2.executeQuery("select * from teacher_subject_connection where teacher_id="+teacherId+" and subject_name='"+subjectName+"'");
+
+        if (resultSet.next() && resultSet1.next() && resultSet2.next()) {
+            System.out.println("Grade:");
+            int grade = scanner.nextInt();
+            String query = "update student_subject_connection set grade=? where student_id=? and subject_name=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, grade);
+            preparedStatement.setInt(2, studentId);
+            preparedStatement.setString(3, subjectName);
+            if (preparedStatement.executeUpdate() > 0) {
+                System.out.println("Successfully graded!");
+            } else {
+                System.out.println("Error occurred!");
+            }
+
+        }
+    }
+
+    public Teacher getTeacherInfo(String teacherName) throws SQLException {
+        Teacher teacher = null;
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from teacher where name='" + teacherName + "'");
+        if (resultSet.next()) {
+            teacher = new Teacher(resultSet.getString("name"),resultSet.getString("email"),resultSet.getString("password"));
+        }
+        int teacherId = getTeacherId(teacherName);
+        statement = connection.createStatement();
+        resultSet = statement.executeQuery("select * from teacher_student_connection where teacher_id=" + teacherId);
+        while (resultSet.next()) {
+            Statement statement1 = connection.createStatement();
+            ResultSet resultSet1 = statement1.executeQuery("select * from student where id="+resultSet.getInt("student_id"));
+            if (resultSet1.next()) {
+                teacher.addStudent(new Student(resultSet1.getString("name"),resultSet1.getString("email"),resultSet1.getString("password")));
+            }
+        }
+        return teacher;
+    }
 }

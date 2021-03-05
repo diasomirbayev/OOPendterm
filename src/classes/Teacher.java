@@ -29,7 +29,7 @@ public class Teacher extends Person{
 
     @Override
     public String toString() {
-        return "Teacher{" +
+        return "Teacher{" + super.toString() +
                 "students=" + students +
                 ", subjects=" + subjects +
                 '}';
