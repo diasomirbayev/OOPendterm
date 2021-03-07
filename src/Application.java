@@ -4,9 +4,6 @@ import java.util.Scanner;
 public class Application {
     static Scanner scanner = new Scanner(System.in);
     static Database database = new Database();
-    //  git add .
-    //  git commit -m "second commit"
-    //  git push -u origin
     public static void adminInterface() throws SQLException, ClassNotFoundException {
         database.setConnection();
         int number = 0;
@@ -76,16 +73,38 @@ public class Application {
         }
     }
 
+    public static void studentInterface(String studentName) throws SQLException, ClassNotFoundException {
+        database.setConnection();
+        int number = 0;
+        while (number != 2) {
+            System.out.println("===================================");
+            System.out.println("Menu:");
+            System.out.println("1. Get info");
+            System.out.println("2. Exit");
+            number = scanner.nextInt();
+            switch (number) {
+                case 1:
+                    System.out.println(database.getStudentInfo(studentName));
+                    break;
+                case 2:
+                    break;
+                default:
+                    System.out.println("Enter correct number!");
+                    break;
+            }
+        }
+    }
+
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         database.setConnection();
         System.out.println("Choose your type: admin(a)/teacher(t)/student(s)");
         char c = scanner.next().charAt(0);
+        boolean isLogged = false;
         switch (c){
             case 'a':
                 adminInterface();
                 break;
             case 't':
-                boolean isLogged = false;
                 String teacherName = "";
                 while (!isLogged) {
                     System.out.println("Name:");
@@ -99,7 +118,18 @@ public class Application {
                 teacherInterface(teacherName);
                 break;
             case 's':
-//                studentInterface();
+                String studentName = "";
+                while (!isLogged) {
+                    System.out.println("Name:");
+                    studentName = scanner.next();
+                    System.out.println("Password:");
+                    String password = scanner.next();
+                    if (database.studentLogin(studentName,password)) {
+                        isLogged = true;
+                    }
+                }
+                studentInterface(studentName);
+                break;
         }
     }
 }

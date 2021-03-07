@@ -1,7 +1,6 @@
 package classes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Student extends Person {
     private final ArrayList<Subject> takenSubjects;
@@ -21,19 +20,11 @@ public class Student extends Person {
         return grades;
     }
 
-    public void addSubject(Subject subject) {
+    public void addSubject(Subject subject, Integer grade) {
         takenSubjects.add(subject);
-        grades.add(-1);
+        grades.add(grade);
     }
 
-    //    public void removeSubject(String subjectName){
-//        for(Subject subject : takenSubjects.keySet()){
-//            if(subject.getName().equals(subjectName)){
-//                takenSubjects.remove(subject);
-//                break;
-//            }
-//        }
-//    }
     public void removeSubject(String subjectName) {
         for (int i = 0; i < takenSubjects.size(); i++) {
             if (takenSubjects.get(i).getName().equals(subjectName)) {
@@ -48,6 +39,7 @@ public class Student extends Person {
     public String toString() {
         return "Student{" + super.toString() +
                 "takenSubjects=" + takenSubjects +
+                "grades=" + grades +
                 '}';
     }
 }

@@ -78,6 +78,11 @@ public class Database {
         preparedStatement.setString(2, teacher.getEmail());
         preparedStatement.setString(3, teacher.getPassword());
         preparedStatement.executeUpdate();
+        if (preparedStatement.executeUpdate() > 0) {
+            System.out.println("Successfully added!");
+        } else {
+            System.out.println("Error occurred!");
+        }
     }
 
     public void addSubject() throws SQLException {
@@ -149,6 +154,15 @@ public class Database {
         return false;
     }
 
+    public boolean studentLogin(String studentName, String password) throws SQLException {
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from student where name='"+studentName+"' and password='"+password+"'");
+        if (resultSet.next()) {
+            return true;
+        }
+        return false;
+    }
+
     public void gradeStudent(String teacherName) throws SQLException {
         System.out.println("Student name:");
         String studentName = scanner.next();
@@ -198,5 +212,27 @@ public class Database {
             }
         }
         return teacher;
+    }
+
+    public Student getStudentInfo(String studentName) throws SQLException {
+        Student student = null;
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from student where name='" + studentName + "'");
+        if (resultSet.next()) {
+            student = new Student(resultSet.getString("name"),resultSet.getString("email"),resultSet.getString("password"));
+        }
+        if (student != null) {
+            int studentId = getStudentId(studentName);
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from student_subject_connection where student_id=" + studentId);
+            while (resultSet.next()) {
+                Statement statement1 = connection.createStatement();
+                ResultSet resultSet1 = statement1.executeQuery("select * from subject where name='"+resultSet.getString("subject_name") + "'");
+                if (resultSet1.next()) {
+                    student.addSubject(new Subject(resultSet1.getString("name"),resultSet1.getInt("credit")),resultSet.getInt("grade"));
+                }
+            }
+        }
+        return student;
     }
 }
