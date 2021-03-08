@@ -1,0 +1,7 @@
+This project is a pseudo-version of the Moodle system. It is designed for: 
+•  To manage the system as an administrator;
+•  To add teachers to the system;
+•  To add students to the system;
+•  To add subjects to the system; 
+•  To manage subjects, students and their grades by teacher; 
+•  To get information about teachers and students.
